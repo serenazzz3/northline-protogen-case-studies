@@ -1,0 +1,14 @@
+{
+  "name": "protogen-manufacturing-case-studies",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "node scripts/serve.mjs",
+    "build": "node scripts/build.mjs",
+    "build:p301": "node scripts/build.mjs p301",
+    "build:p302": "node scripts/build.mjs p302",
+    "build:p303": "node scripts/build.mjs p303",
+    "test": "node --test tests/*.test.mjs"
+  }
+}
