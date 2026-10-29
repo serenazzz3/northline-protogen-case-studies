@@ -10,13 +10,13 @@ Log a downtime event with the machine, reason, and duration. A note is optional.
 
 ## Flow and success criteria
 
-1. Open the phone-first page and immediately see the primary action and current shift.
+1. Open the phone-first page and immediately see the primary action, current shift, and a compact summary of the demo log.
 2. Choose the machine and reason, enter a positive duration, optionally add a note, and save.
 3. See an inline success message with the saved event and a recent-events list.
 4. Invalid duration or missing required fields produce specific inline errors without losing input.
-5. Reset the demo if needed.
+5. Review the two labeled sample events for handoff context; Reset demo clears them and shows the empty state.
 
-Events are saved only in the browser for demonstration. There is no shared backend, account, or claim of live integration. The layout must remain comfortable at narrow widths and usable on desktop.
+Events are saved only in the browser for demonstration. Two clearly labeled sample events provide realistic context on a fresh visit. There is no shared backend, account, or claim of live integration. The layout must remain comfortable at narrow widths and usable on desktop.
 
 ## Design rationale
 

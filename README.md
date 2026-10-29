@@ -2,6 +2,14 @@
 
 Three connected, fictional manufacturing experiences for P301, P302, and P303. Open the landing page to enter each case study, or visit `/p301/`, `/p302/`, and `/p303/` directly.
 
+## Live case studies
+
+| Case | Production site | Review passcode |
+| --- | --- | --- |
+| P301 | [Operations dashboard](https://northline-operations-dashboard.vercel.app/) | `protogen2026` |
+| P302 | [Quality data story](https://northline-quality-story.vercel.app/) | `protogen2026` |
+| P303 | [Mobile downtime log](https://northline-downtime-mobile.vercel.app/) | `protogen2026` |
+
 | Case | Experience | Main interaction |
 | --- | --- | --- |
 | P301 | Plant operations dashboard | Filter a shift or cell and acknowledge an exception |
@@ -25,7 +33,7 @@ All data and names are invented. Dashboard acknowledgements and mobile downtime 
 
 The cohort asks for password protection before submission. This demo includes a simple browser gate using the cohort guide's sample password `protogen2026`; approval lasts for the browser session. Because the password ships in public frontend code, this gate is for cohort review convenience, not protection of sensitive information. Use Vercel's server-side Deployment Protection if stronger access control is needed.
 
-The briefs were written before implementation and document the user, scenario, flows, design decisions, and acceptance checks. See [BRIEF.md](BRIEF.md), [PLAN.md](PLAN.md), [case-studies/P301/BRIEF.md](case-studies/P301/BRIEF.md), [case-studies/P302/BRIEF.md](case-studies/P302/BRIEF.md), and [case-studies/P303/BRIEF.md](case-studies/P303/BRIEF.md). Context and implementation notes live under [context/](context/).
+The briefs were written before implementation and document the user, scenario, flows, design decisions, and acceptance checks. See [BRIEF.md](BRIEF.md), [PLAN.md](PLAN.md), [case-studies/P301/BRIEF.md](case-studies/P301/BRIEF.md), [case-studies/P302/BRIEF.md](case-studies/P302/BRIEF.md), and [case-studies/P303/BRIEF.md](case-studies/P303/BRIEF.md). Context, data definitions, and the requirement review live under [context/](context/).
 
 ## Structure
 

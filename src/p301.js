@@ -1,4 +1,4 @@
-import {operations, exceptions, filterOperations, summarizeOperations} from './data.js';
+import {operations, exceptions, filterOperations, summarizeOperations, cellPerformance, outputGapInsight} from './data.js';
 
 const shiftSelect = document.querySelector('#shift-filter');
 const cellSelect = document.querySelector('#cell-filter');
@@ -72,12 +72,32 @@ function renderRhythm(summary) {
   document.querySelector('#rhythm-insight').textContent=last >= first ? `Output rose from ${first} to ${last} units per hour across the selected scope. Review exceptions before assuming the pace will hold.` : `Output eased from ${first} to ${last} units per hour. Review the queue for an explanation.`;
 }
 
+function renderReadout(rows,issues) {
+  const {totalGap,lead,share}=outputGapInsight(rows);
+  const title=document.querySelector('#readout-title');
+  const copy=document.querySelector('#readout-detail');
+  if(!totalGap){title.textContent='The selected scope is on pace.';copy.textContent='Output has met its planned target. Keep reviewing quality and open exceptions before closing the shift.';return;}
+  title.textContent=rows.some(row=>row.cell!==lead.cell) ? `Cell ${lead.cell} drives ${share}% of the output gap.` : `Cell ${lead.cell} is ${lead.gap} units short of target.`;
+  const nextStep=issues.some(issue=>issue.cell===lead.cell) ? `Open the Cell ${lead.cell} exception before shifting capacity.` : `Review the Cell ${lead.cell} shift log before shifting capacity.`;
+  copy.textContent=`The selected scope is ${totalGap} units below plan. Cell ${lead.cell} accounts for ${lead.gap} of those units and ${lead.downtime} minutes of recorded downtime. ${nextStep}`;
+}
+
+function renderCells(rows) {
+  const body=document.querySelector('#cell-performance-rows');body.replaceChildren();
+  for(const item of cellPerformance(rows)){
+    const row=document.createElement('tr');
+    const cells=[`Cell ${item.cell}`,`${item.output.toLocaleString()} / ${item.target.toLocaleString()}`,`${Math.round(item.output/item.target*100)}%`,`${item.yieldRate.toFixed(1)}%`,`${item.downtime} min`];
+    cells.forEach((value,index)=>{const cell=document.createElement(index?'td':'th');if(!index)cell.setAttribute('scope','row');cell.textContent=value;row.append(cell);});
+    body.append(row);
+  }
+}
+
 function render() {
   const rows=filterOperations(operations,shiftSelect.value,cellSelect.value);
   const issues=scopedIssues();
   const summary=summarizeOperations(rows,issues);
   document.querySelector('#scope-label').textContent=`${shiftSelect.value === 'all' ? 'ALL SHIFTS' : shiftSelect.value.toUpperCase()+' SHIFT'} · ${cellSelect.value === 'all' ? 'ALL CELLS' : 'CELL '+cellSelect.value}`;
-  showMetrics(summary,rows.length);renderQueue(issues);renderRhythm(summary);
+  showMetrics(summary,rows.length);renderReadout(rows,issues);renderQueue(issues);renderRhythm(summary);renderCells(rows);
 }
 
 shiftSelect.addEventListener('change',render);cellSelect.addEventListener('change',render);

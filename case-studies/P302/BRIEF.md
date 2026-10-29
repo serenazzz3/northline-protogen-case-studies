@@ -10,7 +10,7 @@ The audience should leave understanding both the overall improvement and where i
 
 ## Data and interaction
 
-Six months of invented monthly output and defect counts for three lines support two views: defect rate and defect count. A line selector focuses the comparison. Hover and keyboard focus reveal exact values. The story text updates with the selected measure and line.
+Six months of invented monthly output and defect counts for three lines support two views: defect rate and defect count. A line selector focuses the comparison. Hover and keyboard focus reveal exact values. January and June Line B defect categories reconcile to its totals. The story text updates with the selected measure and line; a category control reveals each category's contribution.
 
 ## Flow and success criteria
 
@@ -18,9 +18,10 @@ Six months of invented monthly output and defect counts for three lines support 
 2. Compare all three lines over time and locate the March inspection change.
 3. Select Line B and inspect the February and June values.
 4. Toggle count versus rate and understand why normalized rate is preferable for comparing lines of different output sizes.
+5. Inspect Line B's defect mix and see why misalignment is the next question to investigate.
 
 The chart must have a textual summary, labeled axes and legend, visible focus behavior, and a readable mobile layout. The data is explicitly identified as fictional.
 
 ## Design rationale
 
-Editorial typography and a numbered narrative sequence distinguish the story from the dashboard. The chart is the evidence, while adjacent prose interprets it. Interaction exposes detail without being required to understand the thesis.
+Editorial typography and a numbered narrative sequence distinguish the story from the dashboard. The chart lines draw as the reader reaches the evidence; the defect-mix bars make the final chapter concrete. Adjacent prose interprets the numbers and names the next decision. Interaction exposes detail without being required to understand the thesis.

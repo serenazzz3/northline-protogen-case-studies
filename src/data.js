@@ -21,6 +21,13 @@ export const quality = {
   C:{ output:[3200,3220,3240,3260,3280,3300], defects:[95,92,87,82,77,72] }
 };
 
+// Category counts are a second view of Line B's January and June defect totals.
+export const defectMix = [
+  { category:'Misalignment', january:62, june:16 },
+  { category:'Surface finish', january:41, june:18 },
+  { category:'Dimensional', january:40, june:16 }
+];
+
 export function filterOperations(rows, shift='all', cell='all') {
   return rows.filter(row => (shift === 'all' || row.shift === shift) && (cell === 'all' || row.cell === cell));
 }
@@ -34,6 +41,33 @@ export function summarizeOperations(rows, issues=[]) {
   return { output, target, downtime, yieldRate:weightedYield, alertCount:issues.length, hourly };
 }
 
+export function cellPerformance(rows) {
+  return ['A','B','C'].map(cell => ({ cell, ...summarizeOperations(rows.filter(row => row.cell === cell)) }))
+    .filter(item => item.target > 0);
+}
+
+export function outputGapInsight(rows) {
+  const cells = cellPerformance(rows).map(item => ({ ...item, gap: Math.max(0,item.target-item.output) }));
+  const totalGap = cells.reduce((sum,item) => sum + item.gap,0);
+  const lead = [...cells].sort((a,b) => b.gap-a.gap)[0];
+  return { totalGap, lead, share: totalGap ? Math.round(lead.gap/totalGap*100) : 0 };
+}
+
+export function defectMixTotals() {
+  return {
+    january:defectMix.reduce((sum,item) => sum+item.january,0),
+    june:defectMix.reduce((sum,item) => sum+item.june,0)
+  };
+}
+
+export function defectMixContribution(category) {
+  const item=defectMix.find(row=>row.category===category);
+  if(!item)return null;
+  const totals=defectMixTotals();
+  const drop=item.january-item.june;
+  return { drop, percentDrop:Math.round(drop/item.january*100), shareOfTotalDrop:Math.round(drop/(totals.january-totals.june)*100) };
+}
+
 export function qualityValue(line, monthIndex, measure='rate') {
   const item = quality[line];
   if (!item || monthIndex < 0 || monthIndex >= storyMonths.length) return null;
@@ -45,4 +79,11 @@ export function plantRate(monthIndex) {
   const defects = lines.reduce((sum,line) => sum + line.defects[monthIndex],0);
   const output = lines.reduce((sum,line) => sum + line.output[monthIndex],0);
   return defects / output * 100;
+}
+
+export function lineShareOfPlantDefectReduction(line) {
+  if(!quality[line])return null;
+  const all=Object.values(quality);
+  const totalDrop=all.reduce((sum,item)=>sum+item.defects[0]-item.defects[5],0);
+  return Math.round((quality[line].defects[0]-quality[line].defects[5])/totalDrop*100);
 }

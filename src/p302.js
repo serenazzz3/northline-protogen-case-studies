@@ -1,9 +1,22 @@
-import {quality, qualityValue, storyMonths, plantRate} from './data.js';
+import {quality, qualityValue, storyMonths, plantRate, defectMix, defectMixContribution, lineShareOfPlantDefectReduction} from './data.js';
 
 const chart=document.querySelector('#story-chart');
 const detail=document.querySelector('#chart-detail');
 const colors={A:'#538c87',B:'#d66f55',C:'#9bad74'};
 let selectedLine='all',measure='rate';
+let chartEntered=false;
+const reducedMotion=matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+function animatePaths(){
+  if(reducedMotion)return;
+  chart.querySelectorAll('.line-path').forEach(path=>{
+    const length=path.getTotalLength();
+    path.style.strokeDasharray=length;
+    path.style.strokeDashoffset=length;
+    path.style.transition='none';
+    requestAnimationFrame(()=>requestAnimationFrame(()=>{path.style.transition='stroke-dashoffset 850ms ease';path.style.strokeDashoffset='0';}));
+  });
+}
 
 function svg(tag,attributes={}) {const element=document.createElementNS('http://www.w3.org/2000/svg',tag);for(const [key,value] of Object.entries(attributes))element.setAttribute(key,String(value));return element;}
 function format(value){return measure==='rate'?`${value.toFixed(1)}%`:`${Math.round(value)} defects`;}
@@ -44,6 +57,29 @@ function drawChart(){
   else if(selectedLine==='all')document.querySelector('#story-takeaway p').textContent=measure==='rate'?'Line B moved from 5.1% in February to 1.6% in June — the steepest change in the plant.':'Plant defects fell from 343 in January to 202 in June. Compare rate to account for changing output.';
   else document.querySelector('#story-takeaway p').textContent=`Line ${selectedLine} improved gradually from ${format(qualityValue(selectedLine,0,measure))} in January to ${format(qualityValue(selectedLine,5,measure))} in June.`;
   detail.textContent='Select or focus a chart point for its exact value.';
+  if(chartEntered)animatePaths();
+}
+
+function renderMix(){
+  const container=document.querySelector('#mix-rows');
+  const detail=document.querySelector('#mix-detail');
+  const max=Math.max(...defectMix.map(row=>row.january));
+  defectMix.forEach((item,index)=>{
+    const button=document.createElement('button');button.type='button';button.className='mix-row';button.setAttribute('aria-pressed','false');
+    const name=document.createElement('strong');name.textContent=item.category;
+    const bars=document.createElement('span');bars.className='mix-bars';
+    const before=document.createElement('span');before.className='mix-before';before.style.width=`${item.january/max*100}%`;
+    const after=document.createElement('span');after.className='mix-after';after.style.width=`${item.june/max*100}%`;
+    bars.append(before,after);
+    const values=document.createElement('span');values.className='mix-values';values.textContent=`${item.january} → ${item.june}`;
+    button.append(name,bars,values);container.append(button);
+    button.addEventListener('click',()=>{
+      container.querySelectorAll('button').forEach(row=>{row.classList.toggle('selected',row===button);row.setAttribute('aria-pressed',String(row===button));});
+      const contribution=defectMixContribution(item.category);
+      detail.textContent=`${item.category} fell by ${contribution.drop} defects (${contribution.percentDrop}%), accounting for ${contribution.shareOfTotalDrop}% of Line B's total reduction.`;
+    });
+    if(index===0)button.click();
+  });
 }
 
 function populateTable(){const body=document.querySelector('#story-data-table tbody');for(let i=0;i<storyMonths.length;i++){for(const line of ['A','B','C']){const row=document.createElement('tr');for(const value of [storyMonths[i],`Line ${line}`,quality[line].output[i].toLocaleString(),quality[line].defects[i],`${qualityValue(line,i).toFixed(1)}%`]){const cell=document.createElement('td');cell.textContent=value;row.append(cell);}body.append(row);}}}
@@ -55,4 +91,10 @@ const revealSections=document.querySelectorAll('.reveal');
 if('IntersectionObserver' in window && !matchMedia('(prefers-reduced-motion: reduce)').matches){const observer=new IntersectionObserver(entries=>entries.forEach(entry=>{if(entry.isIntersecting){entry.target.classList.add('visible');observer.unobserve(entry.target);}}),{threshold:.12});revealSections.forEach(section=>observer.observe(section));}else revealSections.forEach(section=>section.classList.add('visible'));
 
 populateTable();drawChart();
+renderMix();
+if('IntersectionObserver' in window){
+  const chartObserver=new IntersectionObserver(entries=>entries.forEach(entry=>{if(entry.isIntersecting){chartEntered=true;animatePaths();chartObserver.disconnect();}}),{threshold:.2});
+  chartObserver.observe(document.querySelector('.story-chart-card'));
+}else{chartEntered=true;animatePaths();}
 document.querySelector('.chapter-stat p').textContent=`January to June · down ${(plantRate(0)-plantRate(5)).toFixed(1)} percentage points`;
+document.querySelector('#line-contribution').textContent=`Line B accounts for ${lineShareOfPlantDefectReduction('B')}% of the plant's reduction in defective units from January to June. The inspection step is a useful point to investigate further, alongside staffing, product mix, and process conditions.`;

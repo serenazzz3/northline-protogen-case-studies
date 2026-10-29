@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import {operations, exceptions, filterOperations, summarizeOperations, qualityValue, plantRate} from '../src/data.js';
+import {operations, exceptions, filterOperations, summarizeOperations, qualityValue, plantRate, outputGapInsight, cellPerformance, defectMixTotals, defectMixContribution, lineShareOfPlantDefectReduction} from '../src/data.js';
 
 test('shift and cell filters narrow the same rows used for summary metrics', () => {
   const rows = filterOperations(operations, 'night', 'B');
@@ -32,4 +32,19 @@ test('quality rate uses output denominator and tells the intended story', () => 
 test('invalid story coordinates return no value', () => {
   assert.equal(qualityValue('missing', 1), null);
   assert.equal(qualityValue('A', 6), null);
+});
+
+test('the dashboard readout identifies the cell driving the true output gap',()=>{
+  const insight=outputGapInsight(operations);
+  assert.equal(insight.totalGap,225);
+  assert.equal(insight.lead.cell,'B');
+  assert.equal(insight.lead.gap,135);
+  assert.equal(insight.share,60);
+  assert.equal(cellPerformance(filterOperations(operations,'night','B')).length,1);
+});
+
+test('defect categories reconcile to the displayed Line B totals',()=>{
+  assert.deepEqual(defectMixTotals(),{january:143,june:50});
+  assert.deepEqual(defectMixContribution('Misalignment'),{drop:46,percentDrop:74,shareOfTotalDrop:49});
+  assert.equal(lineShareOfPlantDefectReduction('B'),66);
 });

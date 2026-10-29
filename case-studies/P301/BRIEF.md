@@ -14,8 +14,8 @@ The demo shows three production cells across day and night shifts. Throughput, f
 
 ## Flow and success criteria
 
-1. On arrival, Maya sees shift status, the headline metrics, and the exception queue above detailed trends.
-2. She filters to a shift and optionally a cell. Metrics and queue update together; an empty queue is explained.
+1. On arrival, Maya sees shift status, headline metrics, a quantified readout of the output gap, and the exception queue above detailed trends.
+2. She filters to a shift and optionally a cell. Metrics, the readout, cell comparison, and queue update together; an empty queue is explained.
 3. She opens an exception for context and acknowledges it. It leaves the active queue and the count changes.
 4. She can reset the demo to repeat the review.
 
@@ -23,4 +23,4 @@ The page must work at desktop and phone widths, communicate targets and units, a
 
 ## Design rationale
 
-The hierarchy is status → exception → context. Large, high-contrast numbers support quick scanning; target labels prevent ambiguous performance claims. Teal conveys stable operation, while coral marks issues requiring action. Compact filter controls match a director's quick morning review.
+The hierarchy is status → quantified readout → exception → context. Large, high-contrast numbers support quick scanning; target labels prevent ambiguous performance claims. The readout connects the 225-unit plant gap to the cell driving it, so the director can decide where to look first. Teal conveys stable operation, while coral marks issues requiring action. Compact filter controls match a director's quick morning review.
